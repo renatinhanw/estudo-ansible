@@ -1,10 +1,10 @@
 ---
 - name: Upload Simple File
-  hosts: aula
+  hosts: localhost
   become: yes
   gather_facts: yes
   vars:
-    file_src: teste.txt
+    file_src: config.json
     file_dest: /usr/src
     owner: root
     group: root
@@ -19,11 +19,19 @@
         mode: "{{mode}}"
       register: upload_file
 
-    - name: alterando conteudo arquivo
-      blockinfile:
-        path: '{{file_dest}}/{{file_src}}'
-        insertafter: ''
-        marker: "# {mark} ANSIBLE MANAGED BLOCK"
-        content: |
-          conteudo edidato pelo ansible
+    - name: Troca texto
+      replace:
+        path: "{{file_dest}}/{{file_src}}"
+        backup: true
+        regexp: "development"
+        replace: "production"
       when: upload_file is success
+
+    # - name: alterando conteudo arquivo
+    #   blockinfile:
+    #     path: '{{file_dest}}/{{file_src}}'
+    #     insertafter: ''
+    #     marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    #     content: |
+    #       conteudo edidato pelo ansible
+    #   when: upload_file is success
